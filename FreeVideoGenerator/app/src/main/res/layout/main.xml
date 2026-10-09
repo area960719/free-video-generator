@@ -1,73 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center_horizontal"
-    android:padding="20dp"
-    android:background="#FFFFFF">
+    android:fillViewport="true"
+    android:background="@drawable/bg_main">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Free Video Generator"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        android:textColor="#0288D1"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp" />
-
-    <EditText
-        android:id="@+id/etTexto"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Escribe el texto o idea"
-        android:minLines="3"
-        android:background="#E3F2FD"
-        android:padding="10dp" />
+        android:orientation="vertical"
+        android:padding="22dp">
 
-    <Button
-        android:id="@+id/btnImagenes"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Elegir imágenes"
-        android:textColor="#FFFFFF"
-        android:background="#0288D1"
-        android:layout_marginTop="20dp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Free Video Generator"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:layout_marginTop="24dp" />
 
-    <Button
-        android:id="@+id/btnMusica"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Elegir música"
-        android:textColor="#FFFFFF"
-        android:background="#0288D1"
-        android:layout_marginTop="10dp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Convierte tus ideas, fotos y música en video"
+            android:textSize="14sp"
+            android:textColor="#B39DDB"
+            android:gravity="center"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="26dp" />
 
-    <TextView
-        android:id="@+id/tvEstado"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Imágenes: 0 | Música: ninguna"
-        android:textColor="#555555"
-        android:gravity="center"
-        android:layout_marginTop="15dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TU IDEA O TEXTO DEL VIDEO"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#00E5FF"
+            android:layout_marginBottom="8dp" />
 
-    <Button
-        android:id="@+id/btnGenerar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Generar Video"
-        android:textColor="#FFFFFF"
-        android:background="#0288D1"
-        android:layout_marginTop="20dp" />
+        <EditText
+            android:id="@+id/etTexto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Escribe aquí el texto que saldrá en tu video..."
+            android:textColorHint="#7E7EA8"
+            android:textColor="#FFFFFF"
+            android:minLines="3"
+            android:gravity="top"
+            android:background="@drawable/input_bg"
+            android:padding="14dp" />
 
-    <ProgressBar
-        android:id="@+id/progreso"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_marginTop="20dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MATERIAL"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#00E5FF"
+            android:layout_marginTop="22dp"
+            android:layout_marginBottom="8dp" />
 
-</LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnImagenes"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="🖼  Imágenes"
+                android:textAllCaps="false"
+                android:textSize="15sp"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/btn_secondary"
+                android:layout_marginRight="6dp" />
+
+            <Button
+                android:id="@+id/btnMusica"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="🎵  Música"
+                android:textAllCaps="false"
+                android:textSize="15sp"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/btn_secondary"
+                android:layout_marginLeft="6dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvEstado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Imágenes: 0  |  Música: ninguna"
+            android:textColor="#CFC6F5"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:background="@drawable/input_bg"
+            android:padding="12dp"
+            android:layout_marginTop="14dp" />
+
+        <Button
+            android:id="@+id/btnGenerar"
+            android:layout_width="match_parent"
+            android:layout_height="62dp"
+            android:text="✨  Generar video"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/btn_primary"
+            android:layout_marginTop="26dp" />
+
+        <ProgressBar
+            android:id="@+id/progreso"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:progressTint="#FF4081"
+            android:visibility="gone"
+            android:layout_marginTop="20dp" />
+
+        <TextView
+            android:id="@+id/tvMensaje"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginTop="12dp" />
+
+    </LinearLayout>
+</ScrollView>
