@@ -1,1 +1,16 @@
-FreeVideoGenerator/app/build.gradle
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.freevideo.generator'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.freevideo.generator"
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+}
