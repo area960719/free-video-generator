@@ -30,15 +30,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-public class MainActivity extends Activity
-{
+public class MainActivity extends Activity {
     private static final int PEDIR_IMAGENES = 1;
     private static final int PEDIR_MUSICA = 2;
 
@@ -48,7 +49,7 @@ public class MainActivity extends Activity
     private static final int SEGUNDOS_POR_IMAGEN = 3;
     private static final int FRAMES_FUNDIDO = 12;
 
-    private ArrayList<Uri> imagenes = new ArrayList<Uri>();
+    private ArrayList<Uri> imagenes = new ArrayList<>();
     private Uri musica = null;
     private boolean generando = false;
 
@@ -58,7 +59,6 @@ public class MainActivity extends Activity
     private ProgressBar progreso;
     private Button btnGenerar;
 
-    // Estado del codificador
     private MediaCodec enc;
     private MediaMuxer mux;
     private boolean muxIniciado = false;
@@ -68,8 +68,7 @@ public class MainActivity extends Activity
     private int[] pix = new int[W * H];
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
@@ -81,14 +80,14 @@ public class MainActivity extends Activity
             getWindow().setNavigationBarColor(Color.parseColor("#2A0F4D"));
         }
 
-        etTexto = (EditText) findViewById(R.id.etTexto);
-        tvEstado = (TextView) findViewById(R.id.tvEstado);
-        tvMensaje = (TextView) findViewById(R.id.tvMensaje);
-        progreso = (ProgressBar) findViewById(R.id.progreso);
-        btnGenerar = (Button) findViewById(R.id.btnGenerar);
+        etTexto = findViewById(R.id.etTexto);
+        tvEstado = findViewById(R.id.tvEstado);
+        tvMensaje = findViewById(R.id.tvMensaje);
+        progreso = findViewById(R.id.progreso);
+        btnGenerar = findViewById(R.id.btnGenerar);
 
-        Button btnImagenes = (Button) findViewById(R.id.btnImagenes);
-        Button btnMusica = (Button) findViewById(R.id.btnMusica);
+        Button btnImagenes = findViewById(R.id.btnImagenes);
+        Button btnMusica = findViewById(R.id.btnMusica);
 
         btnImagenes.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,8 +115,7 @@ public class MainActivity extends Activity
 
     // ---------- Selección de archivos ----------
 
-    private void elegirImagenes()
-    {
+    private void elegirImagenes() {
         try {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
@@ -126,7 +124,7 @@ public class MainActivity extends Activity
         } catch (Exception e1) {
             try {
                 Intent intent2 = new Intent(Intent.ACTION_PICK,
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(intent2, PEDIR_IMAGENES);
             } catch (Exception e2) {
                 tvMensaje.setText("No se pudo abrir la galería: " + e2.getMessage());
@@ -134,8 +132,7 @@ public class MainActivity extends Activity
         }
     }
 
-    private void elegirMusica()
-    {
+    private void elegirMusica() {
         try {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("audio/*");
@@ -143,7 +140,7 @@ public class MainActivity extends Activity
         } catch (Exception e1) {
             try {
                 Intent intent2 = new Intent(Intent.ACTION_PICK,
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(intent2, PEDIR_MUSICA);
             } catch (Exception e2) {
                 tvMensaje.setText("No se pudo abrir música: " + e2.getMessage());
@@ -152,8 +149,7 @@ public class MainActivity extends Activity
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         try {
@@ -167,7 +163,10 @@ public class MainActivity extends Activity
                 ClipData clip = data.getClipData();
                 if (clip != null) {
                     for (int i = 0; i < clip.getItemCount(); i++) {
-                        imagenes.add(clip.getItemAt(i).getUri());
+                        Uri uri = clip.getItemAt(i).getUri();
+                        if (uri != null) {
+                            imagenes.add(uri);
+                        }
                     }
                 } else if (data.getData() != null) {
                     imagenes.add(data.getData());
@@ -182,23 +181,21 @@ public class MainActivity extends Activity
         }
     }
 
-    private void actualizarEstado()
-    {
+    private void actualizarEstado() {
         String m = (musica != null) ? "lista" : "ninguna";
         int seg = imagenes.size() * SEGUNDOS_POR_IMAGEN;
         tvEstado.setText("Imágenes: " + imagenes.size()
-            + "  |  Música: " + m
-            + "  |  Duración: " + seg + " s");
+                + "  |  Música: " + m
+                + "  |  Duración: " + seg + " s");
     }
 
     // ---------- Generación ----------
 
-    private void iniciarGeneracion()
-    {
+    private void iniciarGeneracion() {
         if (generando) {
             return;
         }
-        if (imagenes.size() == 0) {
+        if (imagenes.isEmpty()) {
             tvMensaje.setText("Primero elige al menos una imagen");
             return;
         }
@@ -210,7 +207,7 @@ public class MainActivity extends Activity
         tvMensaje.setText("Creando tu video... no cierres la app");
 
         final String texto = etTexto.getText().toString().trim();
-        final ArrayList<Uri> lista = new ArrayList<Uri>(imagenes);
+        final ArrayList<Uri> lista = new ArrayList<>(imagenes);
         final Uri musicaElegida = musica;
 
         new Thread(new Runnable() {
@@ -221,8 +218,7 @@ public class MainActivity extends Activity
         }).start();
     }
 
-    private void mostrar(final String mensaje, final int porcentaje)
-    {
+    private void mostrar(final String mensaje, final int porcentaje) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -234,8 +230,7 @@ public class MainActivity extends Activity
         });
     }
 
-    private void terminar(final String mensaje)
-    {
+    private void terminar(final String mensaje) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -247,8 +242,7 @@ public class MainActivity extends Activity
         });
     }
 
-    private void crearVideo(ArrayList<Uri> lista, String texto, Uri musicaUri)
-    {
+    private void crearVideo(ArrayList<Uri> lista, String texto, Uri musicaUri) {
         File temp = new File(getCacheDir(), "temp_video.mp4");
         MediaExtractor extractor = null;
         String aviso = "";
@@ -265,29 +259,39 @@ public class MainActivity extends Activity
                 temp.delete();
             }
 
-            // --- Audio (solo AAC/M4A) ---
+            // --- Audio (AAC/M4A) ---
             if (musicaUri != null) {
                 try {
                     extractor = new MediaExtractor();
                     extractor.setDataSource(this, musicaUri, null);
+
                     for (int i = 0; i < extractor.getTrackCount(); i++) {
                         MediaFormat f = extractor.getTrackFormat(i);
                         String mime = f.getString(MediaFormat.KEY_MIME);
+
                         if (mime != null && mime.startsWith("audio/")) {
-                            if (mime.equals("audio/mp4a-latm")) {
+                            if ("audio/mp4a-latm".equalsIgnoreCase(mime)
+                                    || "audio/aac".equalsIgnoreCase(mime)
+                                    || "audio/mpeg".equalsIgnoreCase(mime)
+                                    || "audio/mp3".equalsIgnoreCase(mime)) {
                                 extractor.selectTrack(i);
                                 formatoAudio = f;
+                                break;
                             }
-                            break;
                         }
                     }
+
                 } catch (Exception e) {
                     formatoAudio = null;
                 }
+
                 if (formatoAudio == null) {
                     aviso = "\n(Sin música: usa un archivo M4A o AAC)";
                     if (extractor != null) {
-                        try { extractor.release(); } catch (Exception e) { }
+                        try {
+                            extractor.release();
+                        } catch (Exception ignored) {
+                        }
                     }
                     extractor = null;
                 }
@@ -296,7 +300,7 @@ public class MainActivity extends Activity
             // --- Codificador de video ---
             MediaFormat vf = MediaFormat.createVideoFormat("video/avc", W, H);
             vf.setInteger(MediaFormat.KEY_COLOR_FORMAT,
-                MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible);
+                    MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible);
             vf.setInteger(MediaFormat.KEY_BIT_RATE, 4000000);
             vf.setInteger(MediaFormat.KEY_FRAME_RATE, FPS);
             vf.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1);
@@ -306,7 +310,7 @@ public class MainActivity extends Activity
             enc.start();
 
             mux = new MediaMuxer(temp.getAbsolutePath(),
-                MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+                    MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
 
             // --- Dibujo de frames ---
             Paint pincel = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.ANTI_ALIAS_FLAG);
@@ -316,6 +320,7 @@ public class MainActivity extends Activity
             if (texto.length() > 140) {
                 texto = texto.substring(0, 140);
             }
+
             StaticLayout capaTexto = null;
             if (texto.length() > 0) {
                 TextPaint tp = new TextPaint(Paint.ANTI_ALIAS_FLAG);
@@ -324,7 +329,7 @@ public class MainActivity extends Activity
                 tp.setFakeBoldText(true);
                 tp.setShadowLayer(6, 0, 3, Color.BLACK);
                 capaTexto = new StaticLayout(texto, tp, W - 120,
-                    Layout.Alignment.ALIGN_CENTER, 1.1f, 0f, false);
+                        Layout.Alignment.ALIGN_CENTER, 1.1f, 0f, false);
             }
 
             int framesPorImagen = SEGUNDOS_POR_IMAGEN * FPS;
@@ -341,7 +346,7 @@ public class MainActivity extends Activity
                 for (int f = 0; f < framesPorImagen; f++) {
                     canvas.drawColor(Color.BLACK);
 
-                    float t = f / (float) (framesPorImagen - 1);
+                    float t = framesPorImagen > 1 ? (f / (float) (framesPorImagen - 1)) : 0f;
                     dibujarCover(canvas, actual, 1f + 0.12f * t, 255, pincel);
 
                     if (previa != null && f < FRAMES_FUNDIDO) {
@@ -357,8 +362,9 @@ public class MainActivity extends Activity
                     n++;
 
                     if (n % 10 == 0) {
-                        mostrar("Creando tu video... " + (n * 100 / totalFrames) + "%",
-                            n * 95 / totalFrames);
+                        int porcentaje = totalFrames > 0 ? (n * 95 / totalFrames) : 0;
+                        mostrar("Creando tu video... " + (totalFrames > 0 ? (n * 100 / totalFrames) : 0) + "%",
+                                porcentaje);
                     }
                 }
 
@@ -374,11 +380,17 @@ public class MainActivity extends Activity
 
             // --- Fin del video ---
             int in;
-            while ((in = enc.dequeueInputBuffer(10000)) < 0) {
-                vaciar(false);
+            boolean emitidoFin = false;
+            while (!emitidoFin) {
+                in = enc.dequeueInputBuffer(10000);
+                if (in >= 0) {
+                    enc.queueInputBuffer(in, 0, 0, n * 1000000L / FPS,
+                            MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+                    emitidoFin = true;
+                } else {
+                    vaciar(false);
+                }
             }
-            enc.queueInputBuffer(in, 0, 0, n * 1000000L / FPS,
-                MediaCodec.BUFFER_FLAG_END_OF_STREAM);
             vaciar(true);
 
             // --- Audio ---
@@ -387,54 +399,99 @@ public class MainActivity extends Activity
                 escribirAudio(extractor, formatoAudio, duracionUs);
             }
 
-            mux.stop();
-            muxIniciado = false;
+            if (mux != null && muxIniciado) {
+                mux.stop();
+                muxIniciado = false;
+            }
 
             mostrar("Guardando en la galería...", 97);
             String donde = guardarEnGaleria(temp);
             terminar("✅ ¡Video listo!\nGuardado en: " + donde + aviso);
 
         } catch (Throwable e) {
-            terminar("❌ Error: " + e.getMessage());
+            String msg = e.getMessage();
+            if (msg == null || msg.trim().isEmpty()) {
+                msg = e.toString();
+            }
+            terminar("❌ Error: " + msg);
         } finally {
-            try { if (enc != null) { enc.stop(); } } catch (Exception e) { }
-            try { if (enc != null) { enc.release(); } } catch (Exception e) { }
-            try { if (mux != null) { mux.release(); } } catch (Exception e) { }
-            try { if (extractor != null) { extractor.release(); } } catch (Exception e) { }
+            try {
+                if (enc != null) enc.stop();
+            } catch (Exception ignored) {
+            }
+            try {
+                if (enc != null) enc.release();
+            } catch (Exception ignored) {
+            }
+            try {
+                if (mux != null) mux.release();
+            } catch (Exception ignored) {
+            }
+            try {
+                if (extractor != null) extractor.release();
+            } catch (Exception ignored) {
+            }
             enc = null;
             mux = null;
+            extractor = null;
+
             if (temp.exists()) {
                 temp.delete();
             }
         }
     }
 
-    private void enviarFrame(Bitmap frame, long ptsUs) throws Exception
-    {
+    private void enviarFrame(Bitmap frame, long ptsUs) throws Exception {
         int in;
         while ((in = enc.dequeueInputBuffer(10000)) < 0) {
             vaciar(false);
         }
+
         Image img = enc.getInputImage(in);
-        llenarYuv(frame, img);
-        enc.queueInputBuffer(in, 0, W * H * 3 / 2, ptsUs, 0);
+        if (img == null) {
+            return;
+        }
+
+        try {
+            llenarYuv(frame, img);
+            enc.queueInputBuffer(in, 0, W * H * 3 / 2, ptsUs, 0);
+        } finally {
+            try {
+                img.close();
+            } catch (Exception ignored) {
+            }
+        }
+
         vaciar(false);
     }
 
-    private void llenarYuv(Bitmap bmp, Image img)
-    {
+    private void llenarYuv(Bitmap bmp, Image img) {
+        if (bmp == null || img == null) {
+            return;
+        }
+
         bmp.getPixels(pix, 0, W, 0, 0, W, H);
 
-        Image.Plane[] p = img.getPlanes();
-        ByteBuffer yb = p[0].getBuffer();
-        int yrs = p[0].getRowStride();
-        int yps = p[0].getPixelStride();
-        ByteBuffer ub = p[1].getBuffer();
-        int urs = p[1].getRowStride();
-        int ups = p[1].getPixelStride();
-        ByteBuffer vb = p[2].getBuffer();
-        int vrs = p[2].getRowStride();
-        int vps = p[2].getPixelStride();
+        Image.Plane[] planes = img.getPlanes();
+        if (planes == null || planes.length < 3) {
+            return;
+        }
+
+        ByteBuffer yb = planes[0].getBuffer();
+        int yrs = planes[0].getRowStride();
+        int yps = planes[0].getPixelStride();
+
+        ByteBuffer ub = planes[1].getBuffer();
+        int urs = planes[1].getRowStride();
+        int ups = planes[1].getPixelStride();
+
+        ByteBuffer vb = planes[2].getBuffer();
+        int vrs = planes[2].getRowStride();
+        int vps = planes[2].getPixelStride();
+
+        if (yb == null || ub == null || vb == null) {
+            return;
+        }
 
         for (int y = 0; y < H; y++) {
             int fila = y * W;
@@ -457,33 +514,61 @@ public class MainActivity extends Activity
         }
     }
 
-    private void vaciar(boolean esperarFin) throws Exception
-    {
+    private void vaciar(boolean esperarFin) throws Exception {
+        if (enc == null || mux == null) {
+            return;
+        }
+
         MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
+
         while (true) {
             int idx = enc.dequeueOutputBuffer(info, esperarFin ? 10000 : 0);
+
             if (idx == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 if (!esperarFin) {
                     return;
                 }
-            } else if (idx == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                pistaVideo = mux.addTrack(enc.getOutputFormat());
-                if (formatoAudio != null) {
-                    pistaAudio = mux.addTrack(formatoAudio);
+                continue;
+            }
+
+            if (idx == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+                if (pistaVideo < 0) {
+                    pistaVideo = mux.addTrack(enc.getOutputFormat());
+                    if (formatoAudio != null) {
+                        pistaAudio = mux.addTrack(formatoAudio);
+                    }
+                    mux.start();
+                    muxIniciado = true;
                 }
-                mux.start();
-                muxIniciado = true;
-            } else if (idx >= 0) {
+                continue;
+            }
+
+            if (idx == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+                continue;
+            }
+
+            if (idx >= 0) {
                 ByteBuffer datos = enc.getOutputBuffer(idx);
+                if (datos == null) {
+                    enc.releaseOutputBuffer(idx, false);
+                    if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+                        return;
+                    }
+                    continue;
+                }
+
                 if ((info.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
                     info.size = 0;
                 }
-                if (info.size != 0 && muxIniciado) {
+
+                if (info.size != 0 && muxIniciado && pistaVideo >= 0) {
                     datos.position(info.offset);
                     datos.limit(info.offset + info.size);
                     mux.writeSampleData(pistaVideo, datos, info);
                 }
+
                 enc.releaseOutputBuffer(idx, false);
+
                 if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
                     return;
                 }
@@ -491,15 +576,35 @@ public class MainActivity extends Activity
         }
     }
 
-    private void escribirAudio(MediaExtractor ex, MediaFormat fmt, long duracionUs)
-        throws Exception
-    {
+    private void escribirAudio(MediaExtractor ex, MediaFormat fmt, long duracionUs) throws Exception {
+        if (ex == null || fmt == null || mux == null || pistaAudio < 0) {
+            return;
+        }
+
         int max = 262144;
         if (fmt.containsKey(MediaFormat.KEY_MAX_INPUT_SIZE)) {
             max = Math.max(max, fmt.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE));
         }
+        if (max <= 0) {
+            max = 262144;
+        }
+
         ByteBuffer buf = ByteBuffer.allocate(max);
         MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
+
+        int trackIndex = -1;
+        for (int i = 0; i < ex.getTrackCount(); i++) {
+            MediaFormat formatTrack = ex.getTrackFormat(i);
+            if (formatTrack != null && formatTrack.equals(fmt)) {
+                trackIndex = i;
+                ex.selectTrack(i);
+                break;
+            }
+        }
+
+        if (trackIndex < 0) {
+            return;
+        }
 
         while (true) {
             buf.clear();
@@ -507,38 +612,49 @@ public class MainActivity extends Activity
             if (tam < 0) {
                 break;
             }
+
             long t = ex.getSampleTime();
             if (t > duracionUs) {
                 break;
             }
+
             info.offset = 0;
             info.size = tam;
             info.presentationTimeUs = t;
             info.flags = ex.getSampleFlags();
+
+            buf.position(0);
+            buf.limit(tam);
             mux.writeSampleData(pistaAudio, buf, info);
+
             ex.advance();
         }
     }
 
     // ---------- Dibujo ----------
 
-    private void dibujarCover(Canvas c, Bitmap b, float zoom, int alfa, Paint p)
-    {
+    private void dibujarCover(Canvas c, Bitmap b, float zoom, int alfa, Paint p) {
+        if (b == null || b.isRecycled()) {
+            return;
+        }
+
         float escala = Math.max(W / (float) b.getWidth(), H / (float) b.getHeight()) * zoom;
         float dx = (W - b.getWidth() * escala) / 2f;
         float dy = (H - b.getHeight() * escala) / 2f;
+
         Matrix m = new Matrix();
         m.setScale(escala, escala);
         m.postTranslate(dx, dy);
+
         p.setAlpha(alfa);
         c.drawBitmap(b, m, p);
     }
 
-    private void dibujarTexto(Canvas c, StaticLayout capa)
-    {
+    private void dibujarTexto(Canvas c, StaticLayout capa) {
         float arriba = H - 140 - capa.getHeight();
         Paint barra = new Paint();
         barra.setColor(0x99000000);
+
         c.drawRect(0, arriba - 30, W, arriba + capa.getHeight() + 30, barra);
         c.save();
         c.translate(60, arriba);
@@ -546,10 +662,18 @@ public class MainActivity extends Activity
         c.restore();
     }
 
-    private Bitmap cargarImagen(Uri uri)
-    {
+    private Bitmap cargarImagen(Uri uri) {
+        if (uri == null) {
+            return null;
+        }
+
+        InputStream in = null;
         try {
-            InputStream in = getContentResolver().openInputStream(uri);
+            in = getContentResolver().openInputStream(uri);
+            if (in == null) {
+                return null;
+            }
+
             BitmapFactory.Options o = new BitmapFactory.Options();
             o.inJustDecodeBounds = true;
             BitmapFactory.decodeStream(in, null, o);
@@ -561,34 +685,43 @@ public class MainActivity extends Activity
                 s *= 2;
             }
 
-            o = new BitmapFactory.Options();
-            o.inSampleSize = s;
             in = getContentResolver().openInputStream(uri);
-            Bitmap b = BitmapFactory.decodeStream(in, null, o);
+            if (in == null) {
+                return null;
+            }
+
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inSampleSize = s;
+            Bitmap b = BitmapFactory.decodeStream(in, null, opts);
             in.close();
+
             if (b == null) {
                 return null;
             }
 
             int grados = 0;
+
             if (Build.VERSION.SDK_INT >= 24) {
                 try {
                     in = getContentResolver().openInputStream(uri);
-                    ExifInterface ex = new ExifInterface(in);
-                    int ori = ex.getAttributeInt(ExifInterface.TAG_ORIENTATION,
-                        ExifInterface.ORIENTATION_NORMAL);
-                    in.close();
-                    if (ori == ExifInterface.ORIENTATION_ROTATE_90) {
-                        grados = 90;
-                    } else if (ori == ExifInterface.ORIENTATION_ROTATE_180) {
-                        grados = 180;
-                    } else if (ori == ExifInterface.ORIENTATION_ROTATE_270) {
-                        grados = 270;
+                    if (in != null) {
+                        ExifInterface ex = new ExifInterface(in);
+                        int ori = ex.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                                ExifInterface.ORIENTATION_NORMAL);
+                        if (ori == ExifInterface.ORIENTATION_ROTATE_90) {
+                            grados = 90;
+                        } else if (ori == ExifInterface.ORIENTATION_ROTATE_180) {
+                            grados = 180;
+                        } else if (ori == ExifInterface.ORIENTATION_ROTATE_270) {
+                            grados = 270;
+                        }
+                        in.close();
                     }
                 } catch (Exception e) {
                     grados = 0;
                 }
             }
+
             if (grados != 0) {
                 Matrix m = new Matrix();
                 m.postRotate(grados);
@@ -596,20 +729,32 @@ public class MainActivity extends Activity
                 b.recycle();
                 b = r;
             }
+
             return b;
+
         } catch (Exception e) {
             return null;
         } catch (OutOfMemoryError e) {
             return null;
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (Exception ignored) {
+                }
+            }
         }
     }
 
     // ---------- Guardado ----------
 
-    private String guardarEnGaleria(File origen) throws Exception
-    {
+    private String guardarEnGaleria(File origen) throws Exception {
+        if (origen == null || !origen.exists()) {
+            throw new Exception("No existe el archivo temporal del video");
+        }
+
         String nombre = "FreeVideo_" + System.currentTimeMillis() + ".mp4";
-        OutputStream out;
+        OutputStream out = null;
         String donde;
 
         if (Build.VERSION.SDK_INT >= 29) {
@@ -617,26 +762,54 @@ public class MainActivity extends Activity
             v.put(MediaStore.Video.Media.DISPLAY_NAME, nombre);
             v.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
             v.put(MediaStore.Video.Media.RELATIVE_PATH,
-                Environment.DIRECTORY_MOVIES + "/FreeVideoGenerator");
+                    Environment.DIRECTORY_MOVIES + "/FreeVideoGenerator");
+
             Uri destino = getContentResolver().insert(
-                MediaStore.Video.Media.EXTERNAL_CONTENT_URI, v);
+                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI, v);
+
+            if (destino == null) {
+                throw new Exception("No se pudo crear el archivo en la galería");
+            }
+
             out = getContentResolver().openOutputStream(destino);
             donde = "Galería > Movies/FreeVideoGenerator";
         } else {
             File dir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
-            File destinoArchivo = new File(dir, nombre);
-            out = new java.io.FileOutputStream(destinoArchivo);
+            if (dir == null) {
+                dir = getFilesDir();
+            }
+            File carpeta = new File(dir, "FreeVideoGenerator");
+            if (!carpeta.exists()) {
+                carpeta.mkdirs();
+            }
+
+            File destinoArchivo = new File(carpeta, nombre);
+            out = new FileOutputStream(destinoArchivo);
             donde = destinoArchivo.getAbsolutePath();
         }
 
-        FileInputStream in = new FileInputStream(origen);
-        byte[] buffer = new byte[65536];
-        int leidos;
-        while ((leidos = in.read(buffer)) > 0) {
-            out.write(buffer, 0, leidos);
+        if (out == null) {
+            throw new Exception("No se pudo abrir el flujo de salida del video");
         }
-        in.close();
-        out.close();
+
+        FileInputStream in = new FileInputStream(origen);
+        try {
+            byte[] buffer = new byte[65536];
+            int leidos;
+            while ((leidos = in.read(buffer)) > 0) {
+                out.write(buffer, 0, leidos);
+            }
+        } finally {
+            try {
+                in.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                out.close();
+            } catch (Exception ignored) {
+            }
+        }
+
         return donde;
     }
 }
