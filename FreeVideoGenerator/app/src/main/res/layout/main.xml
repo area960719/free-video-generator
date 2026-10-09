@@ -1,1 +1,73 @@
-FreeVideoGenerator/app/src/main/res/layout/main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:padding="20dp"
+    android:background="#FFFFFF">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Free Video Generator"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:textColor="#0288D1"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp" />
+
+    <EditText
+        android:id="@+id/etTexto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Escribe el texto o idea"
+        android:minLines="3"
+        android:background="#E3F2FD"
+        android:padding="10dp" />
+
+    <Button
+        android:id="@+id/btnImagenes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Elegir imágenes"
+        android:textColor="#FFFFFF"
+        android:background="#0288D1"
+        android:layout_marginTop="20dp" />
+
+    <Button
+        android:id="@+id/btnMusica"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Elegir música"
+        android:textColor="#FFFFFF"
+        android:background="#0288D1"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:id="@+id/tvEstado"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Imágenes: 0 | Música: ninguna"
+        android:textColor="#555555"
+        android:gravity="center"
+        android:layout_marginTop="15dp" />
+
+    <Button
+        android:id="@+id/btnGenerar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Generar Video"
+        android:textColor="#FFFFFF"
+        android:background="#0288D1"
+        android:layout_marginTop="20dp" />
+
+    <ProgressBar
+        android:id="@+id/progreso"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginTop="20dp" />
+
+</LinearLayout>
